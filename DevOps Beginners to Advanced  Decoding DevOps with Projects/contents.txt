@@ -1,0 +1,711 @@
+.
+|-- 0. Websites you may like
+|   `-- [Tutorialsplanet.NET].url
+|-- 1 - Introduction
+|   |-- 1 - DevOps Quiz.html
+|   |-- 1 - Introduction.mp4
+|   |-- 2 - Atlassian Survey 2020 DevOps Trends.txt
+|   |-- 2 - Why Learn DevOps.mp4
+|   |-- 3 - What is DevOps.mp4
+|   |-- 4 - What is Continuous Integration.mp4
+|   |-- 5 - What is Continuous Delivery.mp4
+|   |-- 6 - Q&A Messages & Feedbacks.mp4
+|   |-- 7 - Update on Subtitles.html
+|   `-- [Tutorialsplanet.NET].url
+|-- 10 - AWS Part 1
+|   |-- 100 - Autoscaling Group Hands On.mp4
+|   |-- 101 - S3.mp4
+|   |-- 102 - RDS.mp4
+|   |-- 85 - What is Cloud Computing.mp4
+|   |-- 86 - AWSSlides.pdf
+|   |-- 86 - Introduction.mp4
+|   |-- 87 - Ec2 Documentation.txt
+|   |-- 87 - Ec2 Introduction.mp4
+|   |-- 88 - Ec2 Instance Types.txt
+|   |-- 88 - Ec2 Quick Start.mp4
+|   |-- 89 - More In Ec2 Part1.mp4
+|   |-- 89 - morInEec2-part1.txt
+|   |-- 90 - More in Ec2 Part2.mp4
+|   |-- 90 - Security Group.txt
+|   |-- 91 - AWS CLI Installation.txt
+|   |-- 91 - AWS CLI Refrence.txt
+|   |-- 91 - AWS CLI.mp4
+|   |-- 91 - AWS-Command-Line-Interface-Part-1.pdf
+|   |-- 92 - EBS.mp4
+|   |-- 93 - EBS Snapshots.mp4
+|   |-- 94 - AWS ELB Docs.txt
+|   |-- 94 - ELB Introduction.mp4
+|   |-- 95 - ELB Hands On.mp4
+|   |-- 95 - multios-websetup.sh
+|   |-- 96 - Cloudwatch Introduction.mp4
+|   |-- 97 - Cloudwatch Hands On.mp4
+|   |-- 97 - STRESSInstallAndCommands.txt
+|   |-- 98 - EFS.mp4
+|   `-- 99 - Autoscaling Group Introduction.mp4
+|-- 11 - AWS Cloud For Project Set Up Lift & Shift
+|   |-- 103 - Github Repo Link.txt
+|   |-- 103 - Introduction.mp4
+|   |-- 104 - Security Group & Keypairs.mp4
+|   |-- 105 - EC2 Instances.mp4
+|   |-- 106 - Build and Deploy Artifacts.mp4
+|   |-- 107 - Load Balancer & DNS.mp4
+|   |-- 108 - Autoscaling Group.mp4
+|   `-- 109 - Validate & Summarize.mp4
+|-- 12 - ReArchitecting Web App on AWS Cloud PAAS & SAAS
+|   |-- 110 - Github Repo Link.txt
+|   |-- 110 - Introduction.mp4
+|   |-- 111 - Security Group And Keypairs.mp4
+|   |-- 112 - RDS.mp4
+|   |-- 113 - Elastic Cache.mp4
+|   |-- 114 - Amazon MQ.mp4
+|   |-- 115 - DB Initialization.mp4
+|   |-- 116 - Beanstalk.mp4
+|   |-- 117 - Update on Security Group & ELB.mp4
+|   |-- 118 - Build & Deploy Artifact.mp4
+|   |-- 119 - Cloud front.mp4
+|   `-- 120 - Validate and Summarize.mp4
+|-- 13 - GIT
+|   |-- 121 - Introduction.mp4
+|   |-- 122 - Versioning.mp4
+|   |-- 123 - Branches & More.mp4
+|   |-- 124 - Rollback.mp4
+|   |-- 125 - Git Ssh Login.mp4
+|   |-- 126 - Git Commands.html
+|   |-- 126 - Git-Commands.txt
+|   `-- [Tutorialsplanet.NET].url
+|-- 14 - Maven
+|   |-- 127 - Introduction.mp4
+|   |-- 128 - Maven Commands.html
+|   `-- 128 - maven-commands.txt
+|-- 15 - Continuous Integration with Jenkins
+|   |-- 129 - Introduction.mp4
+|   |-- 130 - Installation.mp4
+|   |-- 131 - Freestyle Vs Pipeline As A Code.mp4
+|   |-- 132 - First Job.mp4
+|   |-- 133 - Tools in Jenkins.mp4
+|   |-- 134 - Plugins Versioning & more.mp4
+|   |-- 135 - Flow of Continuous Integration Pipeline.mp4
+|   |-- 136 - Steps for Continuous Integration Pipeline.mp4
+|   |-- 137 - Jenkins Nexus & Sonarqube Setup.mp4
+|   |-- 137 - Userdata Script for Server Setup.txt
+|   |-- 138 - Server UI Logins.mp4
+|   |-- 139 - Plugins for CI.mp4
+|   |-- 140 - JenkinsfileDemo.txt
+|   |-- 140 - Pipeline As A Code Introduction.mp4
+|   |-- 141 - Code Analysis.mp4
+|   |-- 142 - Code Analysis Demonstration.mp4
+|   |-- 142 - PAAC-Checkstyle.txt
+|   |-- 142 - PAAC-Sonar-Analysis.txt
+|   |-- 143 - PAAC-Sonar-QualityGates.txt
+|   |-- 143 - Quality Gates.mp4
+|   |-- 144 - Software Repositories Intro Nexus.mp4
+|   |-- 145 - Nexus PAAC Demo.mp4
+|   |-- 145 - PAAC-CI-Sonar-Nexus.txt
+|   |-- 146 - Notification Slack.mp4
+|   |-- 146 - PAAC-CI-SlackNotification.txt
+|   |-- 147 - CI for Docker Intro.mp4
+|   |-- 148 - Docker PAAC Prereqs info.mp4
+|   |-- 148 - PAAC-CI-Docker-ECR.txt
+|   |-- 149 - Docker PAAC Demo.mp4
+|   |-- 149 - PAAC-CI-Docker-ECR.txt
+|   |-- 150 - Docker CICD Intro.mp4
+|   |-- 151 - Docker CICD Code.mp4
+|   |-- 151 - PAAC-CICD-Docker-ECR-ECS.txt
+|   |-- 152 - AWS ECS Setup.mp4
+|   |-- 153 - Docker CICD Demonstration.mp4
+|   |-- 153 - PAAC-CICD-Docker-ECR-ECS.txt
+|   |-- 154 - Cleanup.mp4
+|   |-- 155 - Build Triggers Intro.mp4
+|   |-- 156 - Build Triggers Demo.mp4
+|   |-- 156 - Build-Triggers-Remotely.pdf
+|   |-- 156 - Jenkinsfile
+|   |-- 157 - Jenkins Master and Slave.mp4
+|   `-- 158 - Authentication & Authorization.mp4
+|-- 16 - Python
+|   |-- 159 - Anaconda-installation-on-Ubuntu-20.pdf
+|   |-- 159 - Introduction.mp4
+|   |-- 160 - Python on Linux Versions & Indentation.mp4
+|   |-- 161 - Quotes and Comments.mp4
+|   |-- 162 - Variables.mp4
+|   |-- 163 - Print Format.mp4
+|   |-- 164 - Slicing.mp4
+|   |-- 165 - Operators.mp4
+|   |-- 166 - Conditions.mp4
+|   |-- 167 - Loops.mp4
+|   |-- 168 - Break & Continue.mp4
+|   |-- 169 - Builtin Functions or Methods.mp4
+|   |-- 170 - Functions part1.mp4
+|   |-- 171 - Functions part2.mp4
+|   |-- 172 - Modules.mp4
+|   |-- 173 - OS Tasks.mp4
+|   |-- 174 - Python Fabric.mp4
+|   |-- 175 - Pyscripts.html
+|   |-- 175 - pyscripts-1.zip
+|   |-- 176 - Python Scripts.html
+|   `-- 176 - Python-Scripts.zip
+|-- 17 - Ansible
+|   |-- 177 - Introduction.mp4
+|   |-- 178 - Setup Ansible & Infra.mp4
+|   |-- 179 - Inventory & Ping Module.mp4
+|   |-- 180 - YAML & JSON.mp4
+|   |-- 181 - Ad Hoc Commands.mp4
+|   |-- 182 - Playbook & Modules.mp4
+|   |-- 183 - Modules Find Use Troubleshoot & Repeat.mp4
+|   |-- 184 - Ansible Configuration.mp4
+|   |-- 185 - Variables & Debug.mp4
+|   |-- 186 - Group & Host Variables.mp4
+|   |-- 187 - Fact Variables.mp4
+|   |-- 188 - Decision Making Loops & More.mp4
+|   |-- 189 - Loops.mp4
+|   |-- 190 - File copy & template modules.mp4
+|   |-- 191 - Handlers.mp4
+|   |-- 192 - Roles.mp4
+|   |-- 193 - Ansible for AWS.mp4
+|   |-- 193 - test-aws.yml
+|   |-- 194 - Vprofile code.html
+|   `-- 194 - vprofile.zip
+|-- 18 - AWS Part2
+|   |-- 195 - VPC Introduction.mp4
+|   |-- 196 - VPC Design & Components.mp4
+|   |-- 197 - VPC Setup.mp4
+|   |-- 198 - Ec2 Logs.mp4
+|   |-- 199 - Links-1.rtf
+|   |-- 199 - Links.html
+|   |-- 200 - buildspec-1.yml
+|   |-- 200 - buildspec.html
+|   |-- 201 - Links.html
+|   |-- 201 - Links.odt
+|   |-- 202 - S3 policy.html
+|   `-- 202 - s3-policy.json
+|-- 19 - AWS CI CD Project
+|   |-- 203 - Introduction.mp4
+|   |-- 204 - Beanstalk.mp4
+|   |-- 205 - RDS & App Setup on Beanstalk.mp4
+|   |-- 206 - Code Commit.mp4
+|   |-- 207 - Code build.mp4
+|   |-- 207 - buildspec.yml
+|   `-- 208 - Build Deploy & Code Pipeline.mp4
+|-- 2 - Prerequisites Info & Setup
+|   |-- 10 - Homebrew for MacOS.mp4
+|   |-- 10 - Homebrew.txt
+|   |-- 11 - Installing Softwares.mp4
+|   |-- 11 - Prereqs-doc.pdf
+|   |-- 12 - Tools Prerequisites for Ubuntu 20.html
+|   |-- 13 - Signups.mp4
+|   |-- 14 - AWS Setup.mp4
+|   |-- 8 - Tools Prerequisite Information.mp4
+|   |-- 8 - Vprofile Repository Guthub.txt
+|   |-- 9 - Chocolatey for Windows.mp4
+|   |-- 9 - Find Your Software in Chocolatey.txt
+|   `-- 9 - Install Chocolatey.txt
+|-- 20 - Docker
+|   |-- 209 - Introduction.mp4
+|   |-- 210 - Docker Setup.mp4
+|   |-- 211 - Docker commands & concepts.mp4
+|   |-- 212 - Docker Logs.mp4
+|   |-- 213 - Docker volumes.mp4
+|   |-- 214 - Building images.mp4
+|   |-- 215 - EntryCMD.zip
+|   |-- 215 - Entrypoint and CMD.mp4
+|   |-- 215 - EntrypointVsCmd.txt
+|   |-- 216 - Docker Compose Exercise.txt
+|   |-- 216 - Docker Compose.mp4
+|   |-- 216 - Install Docker Compose.txt
+|   |-- 217 - Containerizing project.mp4
+|   |-- 218 - Multi Stage Dockerfile.mp4
+|   |-- 218 - MultiStageDockerfile.txt
+|   |-- 219 - Containerizing Microservice Project.mp4
+|   |-- 219 - Git Repo URL.txt
+|   |-- 219 - Install VScode.txt
+|   |-- 220 - Build & Run Microservice App.mp4
+|   |-- 220 - intDockerAndCompose.txt
+|   `-- [Tutorialsplanet.NET].url
+|-- 21 - Kubernetes
+|   |-- 221 - Introduction.mp4
+|   |-- 222 - Minikube for K8s Setup.mp4
+|   |-- 223 - Kops for K8s Setup.mp4
+|   |-- 223 - kopscreate.txt
+|   |-- 224 - Handon-K8s-objects.txt
+|   |-- 224 - Objects and Documentation.mp4
+|   |-- 225 - Kube Config.mp4
+|   |-- 225 - kubeconfig.txt
+|   |-- 226 - Namespace.mp4
+|   |-- 226 - Namespaces Docs.txt
+|   |-- 226 - namespaces.txt
+|   |-- 227 - Pods.mp4
+|   |-- 228 - Different levels of Logging.mp4
+|   |-- 228 - FixFaultyPod.txt
+|   |-- 229 - Service.mp4
+|   |-- 229 - Service.txt
+|   |-- 230 - Replica Set.mp4
+|   |-- 230 - ReplicaSet Docs.txt
+|   |-- 230 - replicaSet.txt
+|   |-- 231 - Deployment Docs.txt
+|   |-- 231 - Deployment.mp4
+|   |-- 231 - deployment.txt
+|   |-- 232 - Command and Arguments.mp4
+|   |-- 232 - CommandAndArguments.txt
+|   |-- 232 - Define a Command and Argument.txt
+|   |-- 233 - Volume Docs.txt
+|   |-- 233 - Volumes.mp4
+|   |-- 233 - volume.txt
+|   |-- 234 - Config Map.mp4
+|   |-- 234 - ConfigMap Docs.txt
+|   |-- 234 - configMap.txt
+|   |-- 235 - Pull Image From Private Registry.txt
+|   |-- 235 - Secret Docs.txt
+|   |-- 235 - Secret.mp4
+|   |-- 235 - secret.txt
+|   |-- 236 - Ingress Docs.txt
+|   |-- 236 - Ingress.mp4
+|   |-- 236 - Install Nginx Controller for AWS.txt
+|   |-- 236 - Other Controller.txt
+|   |-- 236 - ingress.txt
+|   |-- 237 - Kubectl CLI & Cheatsheet.mp4
+|   |-- 238 - Extras.mp4
+|   |-- 239 - Lens.mp4
+|   |-- 240 - vproapppod.html
+|   |-- 240 - vproapppod.yaml
+|   |-- 241 - vproapp-nodeport.yaml
+|   |-- 241 - vproappnodeport.html
+|   |-- 242 - vproapp-loadbalancer.yml
+|   |-- 242 - vproapploadbalancer.html
+|   |-- 243 - vproapp-repl-controller.yaml
+|   `-- 243 - vproappreplcontroller.html
+|-- 22 - App Deployment on Kubernetes Cluster
+|   |-- 244 - Introduction.mp4
+|   |-- 245 - Spin K8s Cluster.mp4
+|   |-- 246 - Volume Prerqs for DB POD.mp4
+|   |-- 247 - Source Code Overview.mp4
+|   |-- 248 - Kube secret for passwords.mp4
+|   |-- 249 - DB Deployment Definition.mp4
+|   |-- 250 - DB Service Definition.mp4
+|   |-- 251 - Memcached Deployment & Service.mp4
+|   |-- 252 - RabbitMQ Deployment & Service.mp4
+|   |-- 253 - Tomcat Deployment Service & Init containers.mp4
+|   |-- 254 - Provision Stack on K8s Cluster.mp4
+|   `-- 255 - URL for Website & Wrap up.mp4
+|-- 23 - CICD for Docker Kubernetes Using Jenkins
+|   |-- 256 - CICD Introduction.mp4
+|   |-- 256 - cicd-kube-docker.zip
+|   |-- 257 - JenkinsSonar & Docker Integration.mp4
+|   |-- 258 - Plugins Kubernetes Cluster & Helm.mp4
+|   |-- 259 - Helm Charts & git repo Setup.mp4
+|   |-- 260 - Writing Pipeline Code.mp4
+|   `-- 261 - Execution troubleshooting & Summarizing.mp4
+|-- 24 - Terraform Tutorial
+|   |-- 262 - Introduction and Exercise 1_DV.mp4
+|   |-- 262 - terraform-exercises.zip
+|   |-- 263 - Exercise 2 Variables.mp4
+|   |-- 264 - Exercise 3 Provisioners.mp4
+|   |-- 265 - Exercise 4 Output.mp4
+|   |-- 266 - Exercise 5 Backend.mp4
+|   |-- 267 - Exercise 6 Multi Resource.mp4
+|   `-- [Tutorialsplanet.NET].url
+|-- 25 - CloudFormation Tutorial
+|   |-- 268 - Introduction.mp4
+|   |-- 269 - First Example.mp4
+|   |-- 270 - Intrinsic Function.mp4
+|   |-- 271 - Change Set.mp4
+|   |-- 272 - More Intrinsic Functions.mp4
+|   |-- 273 - Multiple Resources.mp4
+|   |-- 274 - Mappings And Pseudo Parameters.mp4
+|   |-- 275 - Parameters.mp4
+|   |-- 276 - Outputs.mp4
+|   `-- 277 - Init.mp4
+|-- 26 - Conclusion
+|   |-- 278 - DevOps Projects Course.txt
+|   |-- 278 - Resumes.mp4
+|   |-- 278 - resumes.zip
+|   `-- [Tutorialsplanet.NET].url
+|-- 3 - VM Setup
+|   |-- 15 - What is Virtualization.mp4
+|   |-- 16 - Introduction.mp4
+|   |-- 17 - VMManuallyWindows & MacOS Intel chip.mp4
+|   |-- 18 - VMAutomaticallyWindows & MacOS Intel chip.mp4
+|   |-- 19 - VM on MacOS M1 chip.mp4
+|   |-- 19 - vm-setupOnMacos.docx
+|   `-- 2 - Vagrant & Virtualbox.html
+|-- 4 - Linux
+|   |-- 10 - Test File Permissions.html
+|   |-- 11 - Sudo quiz.html
+|   |-- 12 - Package Management Quiz.html
+|   |-- 13 - Services Quiz.html
+|   |-- 14 - Processes quiz.html
+|   |-- 15 - Linux OS Quiz.html
+|   |-- 20 - Introduction to Linux.mp4
+|   |-- 20 - Linux-Quickstart-V5.pdf
+|   |-- 21 - Commands and File systems.mp4
+|   |-- 22 - More Commands mkdir cp mv touch etc.mp4
+|   |-- 23 - Vim editor.mp4
+|   |-- 24 - File Types.mp4
+|   |-- 25 - Filters.mp4
+|   |-- 26 - Redirections.mp4
+|   |-- 27 - Users and Groups.mp4
+|   |-- 28 - File permissions.mp4
+|   |-- 29 - Sudo.mp4
+|   |-- 3 - Linux Intro questions.html
+|   |-- 30 - Package Management.mp4
+|   |-- 31 - Services.mp4
+|   |-- 32 - Processes.mp4
+|   |-- 33 - Archiving.mp4
+|   |-- 34 - Ubuntu commands.mp4
+|   |-- 35 - Linux Commands.html
+|   |-- 35 - Linux-Commands.zip
+|   |-- 4 - Test Basic Command in Linux.html
+|   |-- 5 - Test vim editor.html
+|   |-- 6 - Test File types.html
+|   |-- 7 - Test filters command.html
+|   |-- 8 - Test Redirection.html
+|   |-- 9 - Test Users & Group.html
+|   `-- [Tutorialsplanet.NET].url
+|-- 5 - Vagrant & Linux Servers
+|   |-- 16 - IAC Quiz.html
+|   |-- 36 - Vagrant IP RAM & CPU.mp4
+|   |-- 37 - Vagrant Sync Directories.mp4
+|   |-- 38 - Provisioning.mp4
+|   |-- 39 - Website Setup.mp4
+|   |-- 40 - Website Setup Wordpress.mp4
+|   |-- 41 - Automate Website setup.mp4
+|   |-- 41 - Vagrantfile
+|   |-- 42 - Automate Wordpress Setup.mp4
+|   |-- 42 - wordpress.zip
+|   |-- 43 - Multi VM Vagrant file.mp4
+|   |-- 44 - Vagrantvms.html
+|   `-- 44 - vagrant-vms.zip
+|-- 6 - VProfile Project Setup Manual Automated
+|   |-- 17 - Vprofile Project quiz.html
+|   |-- 45 - Github Repo Link.txt
+|   |-- 45 - Introduction.mp4
+|   |-- 46 - Git Repository For Project Source Code.txt
+|   |-- 46 - VM Setup.mp4
+|   |-- 47 - DB Cache & Queue Setup.mp4
+|   |-- 48 - App setup.mp4
+|   |-- 49 - Nginx Setup.mp4
+|   |-- 50 - Validate.mp4
+|   |-- 51 - Automated Introduction.mp4
+|   |-- 52 - Automated Code.mp4
+|   `-- 53 - Automated Execution.mp4
+|-- 7 - Networking
+|   |-- 18 - Networking Quiz.html
+|   |-- 54 - ISO.mp4
+|   |-- 55 - Understanding Networks & IP.mp4
+|   |-- 56 - Protocols ports etc.mp4
+|   `-- 57 - Networking Commands.mp4
+|-- 8 - Introducing Containers
+|   |-- 19 - Container Quiz.html
+|   |-- 20 - Docker Intro Quiz.html
+|   |-- 21 - Docker Quiz.html
+|   |-- 58 - What are containers.mp4
+|   |-- 58 - What is Container.txt
+|   |-- 59 - What is Docker.mp4
+|   |-- 59 - What is Docker.txt
+|   |-- 60 - Hands on Docker Containers.mp4
+|   |-- 60 - Vagrantfile
+|   |-- 60 - docker-hands-on-commands.txt
+|   |-- 60 - dockerInstallOnUbuntu.txt
+|   |-- 61 - Vagrantfile
+|   |-- 61 - Vprofile Project on Containers.mp4
+|   |-- 61 - vprofile-docker-compose.txt
+|   |-- 62 - Microservices.mp4
+|   |-- 62 - What is Microservice.txt
+|   |-- 63 - Microservice Project.mp4
+|   |-- 63 - Vagrantfile
+|   `-- 63 - emart-docker-compose.txt
+|-- 9 - Bash Scripting
+|   |-- 22 - Variables Quiz.html
+|   |-- 23 - Arguments Quiz.html
+|   |-- 24 - Quote quiz.html
+|   |-- 25 - Variable Quiz.html
+|   |-- 26 - Conditions Quiz.html
+|   |-- 27 - For loop quiz.html
+|   |-- 64 - Bash Scripts.html
+|   |-- 64 - Vagrantfile
+|   |-- 64 - bash-scripts-DPC.zip
+|   |-- 65 - Introduction.mp4
+|   |-- 66 - VM Setup.mp4
+|   |-- 67 - Bash-Scripts.zip
+|   |-- 67 - First Script.mp4
+|   |-- 68 - Sample Script.mp4
+|   |-- 69 - Variables.mp4
+|   |-- 70 - Command line arguments.mp4
+|   |-- 71 - System Variables.mp4
+|   |-- 72 - Quotes.mp4
+|   |-- 73 - Command Substitution.mp4
+|   |-- 74 - Exporting Variables.mp4
+|   |-- 75 - User Input.mp4
+|   |-- 76 - Decision Making part1.mp4
+|   |-- 77 - Decision Making part2.mp4
+|   |-- 78 - Monitoring Script.mp4
+|   |-- 79 - Loops.mp4
+|   |-- 80 - While Loops.mp4
+|   |-- 81 - Remote Command Execution.mp4
+|   |-- 82 - SSH Key Exchange.mp4
+|   |-- 83 - Finale Part1.mp4
+|   |-- 84 - Finale Part2.mp4
+|   `-- [Tutorialsplanet.NET].url
+|-- [Tutorialsplanet.NET].url
+|-- contents.txt
+`-- subtitles
+    |-- 1 - Introduction English.vtt
+    |-- 10 - Homebrew for MacOS English.vtt
+    |-- 100 - Autoscaling Group Hands On English.vtt
+    |-- 101 - S3 English.vtt
+    |-- 102 - RDS English.vtt
+    |-- 103 - Introduction English.vtt
+    |-- 104 - Security Group & Keypairs English.vtt
+    |-- 105 - EC2 Instances English.vtt
+    |-- 106 - Build and Deploy Artifacts English.vtt
+    |-- 107 - Load Balancer & DNS English.vtt
+    |-- 108 - Autoscaling Group English.vtt
+    |-- 109 - Validate & Summarize English.vtt
+    |-- 11 - Installing Softwares English.vtt
+    |-- 110 - Introduction English.vtt
+    |-- 111 - Security Group And Keypairs English.vtt
+    |-- 112 - RDS English.vtt
+    |-- 113 - Elastic Cache English.vtt
+    |-- 114 - Amazon MQ English.vtt
+    |-- 115 - DB Initialization English.vtt
+    |-- 116 - Beanstalk English.vtt
+    |-- 117 - Update on Security Group & ELB English.vtt
+    |-- 118 - Build & Deploy Artifact English.vtt
+    |-- 119 - Cloud front English.vtt
+    |-- 120 - Validate and Summarize English.vtt
+    |-- 121 - Introduction English.vtt
+    |-- 122 - Versioning English.vtt
+    |-- 123 - Branches & More English.vtt
+    |-- 124 - Rollback English.vtt
+    |-- 125 - Git Ssh Login English.vtt
+    |-- 127 - Introduction English.vtt
+    |-- 129 - Introduction English.vtt
+    |-- 13 - Signups English.vtt
+    |-- 130 - Installation English.vtt
+    |-- 131 - Freestyle Vs Pipeline As A Code English.vtt
+    |-- 132 - First Job English.vtt
+    |-- 133 - Tools in Jenkins English.vtt
+    |-- 134 - Plugins Versioning & more English.vtt
+    |-- 135 - Flow of Continuous Integration Pipeline English.vtt
+    |-- 136 - Steps for Continuous Integration Pipeline English.vtt
+    |-- 137 - Jenkins Nexus & Sonarqube Setup English.vtt
+    |-- 138 - Server UI Logins English.vtt
+    |-- 139 - Plugins for CI English.vtt
+    |-- 14 - AWS Setup English.vtt
+    |-- 140 - Pipeline As A Code Introduction English.vtt
+    |-- 141 - Code Analysis English.vtt
+    |-- 142 - Code Analysis Demonstration English.vtt
+    |-- 143 - Quality Gates English.vtt
+    |-- 144 - Software Repositories Intro Nexus English.vtt
+    |-- 145 - Nexus PAAC Demo English.vtt
+    |-- 146 - Notification Slack English.vtt
+    |-- 147 - CI for Docker Intro English.vtt
+    |-- 148 - Docker PAAC Prereqs info English.vtt
+    |-- 149 - Docker PAAC Demo English.vtt
+    |-- 15 - What is Virtualization English.vtt
+    |-- 150 - Docker CICD Intro English.vtt
+    |-- 151 - Docker CICD Code English.vtt
+    |-- 152 - AWS ECS Setup English.vtt
+    |-- 153 - Docker CICD Demonstration English.vtt
+    |-- 154 - Cleanup English.vtt
+    |-- 155 - Build Triggers Intro English.vtt
+    |-- 156 - Build Triggers Demo English.vtt
+    |-- 157 - Jenkins Master and Slave English.vtt
+    |-- 158 - Authentication & Authorization English.vtt
+    |-- 159 - Introduction English.vtt
+    |-- 16 - Introduction English.vtt
+    |-- 160 - Python on Linux Versions & Indentation English.vtt
+    |-- 161 - Quotes and Comments English.vtt
+    |-- 162 - Variables English.vtt
+    |-- 163 - Print Format English.vtt
+    |-- 164 - Slicing English.vtt
+    |-- 165 - Operators English.vtt
+    |-- 166 - Conditions English.vtt
+    |-- 167 - Loops English.vtt
+    |-- 168 - Break & Continue English.vtt
+    |-- 169 - Builtin Functions or Methods English.vtt
+    |-- 17 - VMManuallyWindows & MacOS Intel chip English.vtt
+    |-- 170 - Functions part1 English.vtt
+    |-- 171 - Functions part2 English.vtt
+    |-- 172 - Modules English.vtt
+    |-- 173 - OS Tasks English.vtt
+    |-- 174 - Python Fabric English.vtt
+    |-- 177 - Introduction English.vtt
+    |-- 178 - Setup Ansible & Infra English.vtt
+    |-- 179 - Inventory & Ping Module English.vtt
+    |-- 18 - VMAutomaticallyWindows & MacOS Intel chip English.vtt
+    |-- 180 - YAML & JSON English.vtt
+    |-- 181 - Ad Hoc Commands English.vtt
+    |-- 182 - Playbook & Modules English.vtt
+    |-- 183 - Modules Find Use Troubleshoot & Repeat English.vtt
+    |-- 184 - Ansible Configuration English.vtt
+    |-- 185 - Variables & Debug English.vtt
+    |-- 186 - Group & Host Variables English.vtt
+    |-- 187 - Fact Variables English.vtt
+    |-- 188 - Decision Making Loops & More English.vtt
+    |-- 189 - Loops English.vtt
+    |-- 19 - VM on MacOS M1 chip English.vtt
+    |-- 190 - File copy & template modules English.vtt
+    |-- 191 - Handlers English.vtt
+    |-- 192 - Roles English.vtt
+    |-- 193 - Ansible for AWS English.vtt
+    |-- 195 - VPC Introduction English.vtt
+    |-- 196 - VPC Design & Components English.vtt
+    |-- 197 - VPC Setup English.vtt
+    |-- 198 - Ec2 Logs English.vtt
+    |-- 2 - Why Learn DevOps English.vtt
+    |-- 20 - Introduction to Linux English.vtt
+    |-- 203 - Introduction English.vtt
+    |-- 204 - Beanstalk English.vtt
+    |-- 205 - RDS & App Setup on Beanstalk English.vtt
+    |-- 206 - Code Commit English.vtt
+    |-- 207 - Code build English.vtt
+    |-- 208 - Build Deploy & Code Pipeline English.vtt
+    |-- 209 - Introduction English.vtt
+    |-- 21 - Commands and File systems English.vtt
+    |-- 210 - Docker Setup English.vtt
+    |-- 211 - Docker commands & concepts English.vtt
+    |-- 212 - Docker Logs English.vtt
+    |-- 213 - Docker volumes English.vtt
+    |-- 214 - Building images English.vtt
+    |-- 215 - Entrypoint and CMD English.vtt
+    |-- 216 - Docker Compose English.vtt
+    |-- 217 - Containerizing project English.vtt
+    |-- 218 - Multi Stage Dockerfile English.vtt
+    |-- 219 - Containerizing Microservice Project English.vtt
+    |-- 22 - More Commands mkdir cp mv touch etc English.vtt
+    |-- 220 - Build & Run Microservice App English.vtt
+    |-- 221 - Introduction English.vtt
+    |-- 222 - Minikube for K8s Setup English.vtt
+    |-- 223 - Kops for K8s Setup English.vtt
+    |-- 224 - Objects and Documentation English.vtt
+    |-- 225 - Kube Config English.vtt
+    |-- 226 - Namespace English.vtt
+    |-- 227 - Pods English.vtt
+    |-- 228 - Different levels of Logging English.vtt
+    |-- 229 - Service English.vtt
+    |-- 23 - Vim editor English.vtt
+    |-- 230 - Replica Set English.vtt
+    |-- 231 - Deployment English.vtt
+    |-- 232 - Command and Arguments English.vtt
+    |-- 233 - Volumes English.vtt
+    |-- 234 - Config Map English.vtt
+    |-- 235 - Secret English.vtt
+    |-- 236 - Ingress English.vtt
+    |-- 237 - Kubectl CLI & Cheatsheet English.vtt
+    |-- 238 - Extras English.vtt
+    |-- 239 - Lens English.vtt
+    |-- 24 - File Types English.vtt
+    |-- 244 - Introduction English.vtt
+    |-- 245 - Spin K8s Cluster English.vtt
+    |-- 246 - Volume Prerqs for DB POD English.vtt
+    |-- 247 - Source Code Overview English.vtt
+    |-- 248 - Kube secret for passwords English.vtt
+    |-- 249 - DB Deployment Definition English.vtt
+    |-- 25 - Filters English.vtt
+    |-- 250 - DB Service Definition English.vtt
+    |-- 251 - Memcached Deployment & Service English.vtt
+    |-- 252 - RabbitMQ Deployment & Service English.vtt
+    |-- 253 - Tomcat Deployment Service & Init containers English.vtt
+    |-- 254 - Provision Stack on K8s Cluster English.vtt
+    |-- 255 - URL for Website & Wrap up English.vtt
+    |-- 256 - CICD Introduction English.vtt
+    |-- 257 - JenkinsSonar & Docker Integration English.vtt
+    |-- 258 - Plugins Kubernetes Cluster & Helm English.vtt
+    |-- 259 - Helm Charts & git repo Setup English.vtt
+    |-- 26 - Redirections English.vtt
+    |-- 260 - Writing Pipeline Code English.vtt
+    |-- 261 - Execution troubleshooting & Summarizing English.vtt
+    |-- 262 - Introduction and Exercise 1 English.vtt
+    |-- 263 - Exercise 2 Variables English.vtt
+    |-- 264 - Exercise 3 Provisioners English.vtt
+    |-- 265 - Exercise 4 Output English.vtt
+    |-- 266 - Exercise 5 Backend English.vtt
+    |-- 267 - Exercise 6 Multi Resource English.vtt
+    |-- 268 - Introduction English.vtt
+    |-- 269 - First Example English.vtt
+    |-- 27 - Users and Groups English.vtt
+    |-- 270 - Intrinsic Function English.vtt
+    |-- 271 - Change Set English.vtt
+    |-- 272 - More Intrinsic Functions English.vtt
+    |-- 273 - Multiple Resources English.vtt
+    |-- 274 - Mappings And Pseudo Parameters English.vtt
+    |-- 275 - Parameters English.vtt
+    |-- 276 - Outputs English.vtt
+    |-- 277 - Init English.vtt
+    |-- 278 - Resumes English.vtt
+    |-- 28 - File permissions English.vtt
+    |-- 29 - Sudo English.vtt
+    |-- 3 - What is DevOps English.vtt
+    |-- 30 - Package Management English.vtt
+    |-- 31 - Services English.vtt
+    |-- 32 - Processes English.vtt
+    |-- 33 - Archiving English.vtt
+    |-- 34 - Ubuntu commands English.vtt
+    |-- 36 - Vagrant IP RAM & CPU English.vtt
+    |-- 37 - Vagrant Sync Directories English.vtt
+    |-- 38 - Provisioning English.vtt
+    |-- 39 - Website Setup English.vtt
+    |-- 4 - What is Continuous Integration English.vtt
+    |-- 40 - Website Setup Wordpress English.vtt
+    |-- 41 - Automate Website setup English.vtt
+    |-- 42 - Automate Wordpress Setup English.vtt
+    |-- 43 - Multi VM Vagrant file English.vtt
+    |-- 45 - Introduction English.vtt
+    |-- 46 - VM Setup English.vtt
+    |-- 47 - DB Cache & Queue Setup English.vtt
+    |-- 48 - App setup English.vtt
+    |-- 49 - Nginx Setup English.vtt
+    |-- 5 - What is Continuous Delivery English.vtt
+    |-- 50 - Validate English.vtt
+    |-- 51 - Automated Introduction English.vtt
+    |-- 52 - Automated Code English.vtt
+    |-- 53 - Automated Execution English.vtt
+    |-- 54 - ISO English.vtt
+    |-- 55 - Understanding Networks & IP English.vtt
+    |-- 56 - Protocols ports etc English.vtt
+    |-- 57 - Networking Commands English.vtt
+    |-- 58 - What are containers English.vtt
+    |-- 59 - What is Docker English.vtt
+    |-- 6 - Q&A Messages & Feedbacks English.vtt
+    |-- 60 - Hands on Docker Containers English.vtt
+    |-- 61 - Vprofile Project on Containers English.vtt
+    |-- 62 - Microservices English.vtt
+    |-- 63 - Microservice Project English.vtt
+    |-- 65 - Introduction English.vtt
+    |-- 66 - VM Setup English.vtt
+    |-- 67 - First Script English.vtt
+    |-- 68 - Sample Script English.vtt
+    |-- 69 - Variables English.vtt
+    |-- 70 - Command line arguments English.vtt
+    |-- 71 - System Variables English.vtt
+    |-- 72 - Quotes English.vtt
+    |-- 73 - Command Substitution English.vtt
+    |-- 74 - Exporting Variables English.vtt
+    |-- 75 - User Input English.vtt
+    |-- 76 - Decision Making part1 English.vtt
+    |-- 77 - Decision Making part2 English.vtt
+    |-- 78 - Monitoring Script English.vtt
+    |-- 79 - Loops English.vtt
+    |-- 8 - Tools Prerequisite Information English.vtt
+    |-- 80 - While Loops English.vtt
+    |-- 81 - Remote Command Execution English.vtt
+    |-- 82 - SSH Key Exchange English.vtt
+    |-- 83 - Finale Part1 English.vtt
+    |-- 84 - Finale Part2 English.vtt
+    |-- 85 - What is Cloud Computing English.vtt
+    |-- 86 - Introduction English.vtt
+    |-- 87 - Ec2 Introduction English.vtt
+    |-- 88 - Ec2 Quick Start English.vtt
+    |-- 89 - More In Ec2 Part1 English.vtt
+    |-- 9 - Chocolatey for Windows English.vtt
+    |-- 90 - More in Ec2 Part2 English.vtt
+    |-- 91 - AWS CLI English.vtt
+    |-- 92 - EBS English.vtt
+    |-- 93 - EBS Snapshots English.vtt
+    |-- 94 - ELB Introduction English.vtt
+    |-- 95 - ELB Hands On English.vtt
+    |-- 96 - Cloudwatch Introduction English.vtt
+    |-- 97 - Cloudwatch Hands On English.vtt
+    |-- 98 - EFS English.vtt
+    `-- 99 - Autoscaling Group Introduction English.vtt
+
+28 directories, 680 files

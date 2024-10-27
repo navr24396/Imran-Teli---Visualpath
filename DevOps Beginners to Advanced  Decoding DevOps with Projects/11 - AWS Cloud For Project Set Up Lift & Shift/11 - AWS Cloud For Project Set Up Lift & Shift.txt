@@ -1,0 +1,154 @@
+Security Group:
+1.Create a security group for ALB, allow http and https traffic from anywhere
+2.Create a security group for our Instances and allow only traffic from ALB(SG of ALB) on port 8080 as tomcat listens on this port 
+3.Create a security group for our backend services i.e Rabbit MQ, Memcached & mysql and allow 
+i)mysql traffic(port 3306) from SG of our instances
+ii)memcached traffic (port 11211) from SG of instances
+iii)rabbitmq(port 5672) from SG of instances
+Also these 3 services will be interacting with each other, so add an inbound rule to allow
+iv)All traffic from the same Security Group
+---
+Key Pair:
+1.Create a key pair to login to the instances
+---
+Clone github project 
+https://github.com/devopshydclub/vprofile-project
+Checkout to branch aws-LiftAndShift
+git checkout aws-LiftAndShift
+---
+EC2 Instances:
+Provision mysql server:
+1.No lets create an Amazon Linux EC2 instances for mysql service and pass userdata present at /home/ashok/github/vprofile-project/userdata/mysql.sh
+2.Now to login to this server, open port 22 from the SG of the instances
+3.Login to the server and check mysql service status
+systemctl status mariadb
+4.If the service is still not up and running, it could be because that its already provisioning our services/executing our commands. To check use
+ps -aux or ps -ef and see if install command is running. If yes, wait for it to finish the installation
+5. Once the service is up and running, do below checks
+sudo -i
+systemctl status mariadb
+mysql -u <user-name> -p <password>
+show databases;
+use <db-name>;
+show tables;
+~~~
+Provision memcached:
+Launch and EC2 instance with the userdata present at /home/ashok/github/vprofile-project/userdata/memcache.sh 
+1.Login into the server and check the service status
+sudo -i
+systemctl status memcached
+2.Check if the service is running on the right port
+ss -tulnp | grep 11211
+~~~
+Provision rabbitmq:
+Launch and EC2 instance with the userdata present at /home/ashok/github/vprofile-project/userdata/rabbitmq.sh
+1.Login into the server and check the service status
+sudo -i
+systemctl status rabbitmq
+~~~
+Now our backend stack is UP and runnning.
+Now lets update the private IP of all these 3 in Route 53 private DNS zones
+---
+Route 53:
+Create a hosted zone for our backend services
+1. Chose hosted zone as private
+2. Choose the region and the vpc to be associated to our hosted zone.
+Once hosted zone is created, lets create records
+1. Choose simple routing policy and 
+2. Create a type A record(name to IP mapping) like below
+db01.vprofile.in	A	<private ip of mysql>
+mc01.vprofile.in	A	<private ip of memcached>
+rmq01.vprofile.in	A	<private ip of rabbitmq>
+
+these FQDNs will be used by Tomcat server. In application.properties file we will mwntioned these names rather than IP addresses
+This is because even if we replace the backend servers, we need not change these names in the application.properties file in tomcat server
+---
+Now lets launch a ubuntu 18.04 LTS instances for Tomcat server with userdata present at /home/ashok/github/vprofile-project/userdata/tomcat_ubuntu.sh
+
+---
+Build and Deploy Artifacts:
+Now lets install maven and java 1.8 
+Make the changes in application.properties file
+1.Go to /home/ashok/github/vprofile-project/src/main/resources/application.properties file 
+2.modify below as per the names given in Route 53
+jdbc.url=jdbc:mysql://db01.vprofile.in:3306/accounts?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+memcached.active.host=mc01.vprofile.in
+rabbitmq.address=rmq01.vprofile.in
+3.Go to the directory where pom.xml file is present and do mvn install which will generate our artifact
+4.Once buils is successfull, go to target directory and see our artifact i.e *.war file
+5.Lets copy this artifact to an S3 bucket
+aws s3 cp <artifact> <bucket-path>
+6.Now lets create an IAM role for the EC2 instances to access this artifact from the S3 bucket
+7.Allow poer 22 from SG od tomcat instance and ssh into it and do below
+systemctl status tomcat8
+cd /var/lib/tomcat8
+cd webapps
+ls				#ROOT directory will be present which contains the default application
+8.Lets remove this ROOT directory but before that stop tomcat service
+systemctl stop tomcat8
+rm -rf ROOT
+9.Now download the artifact from S3 bucket
+aws s3 ls s3://xxxxxxx
+aws s3 cp <s3 url> /tmp/
+cd /tmp/
+10.Copy this *.war file to path /var/lib/tomcat8/webapps/ROOT.war
+cp /tmp/*.war /var/lib/tomcat8/webapps/ROOT.war
+11.Start tomcat8 service
+systemctl start tomcat8
+12.Now ROOT directory will again be created and to see the application.properties file go to
+cd /var/lib/tomcat8/webapps/ROOT/WEB-INF/classes/
+cat application.properties
+13. If you would like to validate network connectivity from tomcat server to any of the backend then do
+telnet db01.vprofile.in 3306
+If ypu are able to connect then network is validated, similarly we can test for other backends as well
+---
+Load Balancer & DNS:
+1.Create a Target group for application server i.e Tomcat with port 8080 and give health check path as /login. Override the health check port to give 8080
+2.Create an Internet Facing ALB and the created Target Group as an https listner. Add certificate for the same
+3.Copy DNS name of ALB and add a CName record for our ALB endpoint
+4. Now if you type that domain name, you should see the website
+---
+Autoscaling Group:
+1.Create an image from the Instance
+2.Create a Launch template
+3.Create an Auto Scaling Group
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

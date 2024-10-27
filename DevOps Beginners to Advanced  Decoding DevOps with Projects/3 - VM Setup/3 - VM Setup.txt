@@ -1,0 +1,102 @@
+To ssh into a VM from GitBash
+Enable Network Adapter 2 and attach to Bridged Adapter
+Now the VM will fetch IP address from the wifi router 
+Next do follwing 
+
+Check SSH Service:
+Ensure the SSH service is installed and running on the Ubuntu VM.
+sudo apt-get update
+sudo apt-get install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+sudo systemctl status ssh
+
+Firewall Settings:
+Make sure the firewall allows SSH connections.
+sudo ufw allow ssh
+sudo ufw enable
+sudo ufw status
+
+Confirm IP and Port:
+Verify the IP address and ensure port 22 is open.
+ifconfig
+netstat -tuln | grep 22
+
+After performing these steps, try SSH again from Git Bash:
+ssh <vm-username>@<vm-public-ip>
+ssh username@192.168.1.12
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now to setup alias for ssh username@192.168.1.12
+Open Git Bash.
+
+Edit the ~/.bashrc file to add your alias:
+nano ~/.bashrc
+
+Add the following line at the end of the file:
+alias myssh='ssh username@192.168.1.12'
+
+Save the file and exit the editor (Ctrl+X, then Y, then Enter).
+
+Apply the changes:
+source ~/.bashrc
+
+Now just type myssh to login
+To see all aliases type alias
+-----------------------------------------
+To set up passwordless SSH login, you need to generate an SSH key pair on your Windows laptop and add the public key to your Ubuntu VM. Here’s how to do it:
+Option1: ssh-copy-id username@192.168.1.12
+Option2: Copy public key and paste it under authorized keys of VM 
+
+mkdir -p ~/.ssh
+echo 'your-copied-public-key' >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+-----------------------------------------
+To 
+
+To configure SSH to automatically use a specific username when connecting to an IP address, you can set up an SSH configuration file. Here’s how to do it:
+
+Open Git Bash.
+
+Edit the SSH config file (create it if it doesn't exist):
+nano ~/.ssh/config
+
+Add the following configuration:
+Host youralias
+    HostName 192.168.1.12
+    User yourusername
+
+Save the file and exit the editor (Ctrl+X, then Y, then Enter).
+
+Replace youralias with a name you want to use (e.g., myvm), 192.168.1.12 with the IP address of your Ubuntu VM, and yourusername with your Ubuntu VM username.
+-----------------------
+To run sudo commands without being prompted for a password, you need to configure the sudoers file. Here's how to do it:
+sudo visudo
+At the end of the file, add:
+ashok ALL=(ALL) NOPASSWD:ALL
+-----------------------
+To disable password-based login and allow only SSH key-based login, follow these steps:
+Open the SSH configuration file:
+sudo nano /etc/ssh/sshd_config
+
+Disable password authentication:
+Find the following lines and set them as follows:
+PasswordAuthentication no
+
+Save and exit the editor (Ctrl+X, then Y, then Enter).
+
+Restart the SSH service to apply the changes:
+sudo systemctl restart ssh
+-----------------------
+To enable both password-based and SSH key-based login, ensure your SSH configuration file allows both methods. Here’s how to do it:
+sudo nano /etc/ssh/sshd_config
+
+Ensure the following lines are set appropriately:
+PasswordAuthentication yes
+PubkeyAuthentication yes
+
+Save and exit the editor (Ctrl+X, then Y, then Enter).
+sudo systemctl restart ssh
+
+
+

@@ -1,0 +1,48 @@
+ifconfig:
+This command will show you all the active network interfaces and their names
+Eg. Netwoek interfaces names:
+enp0s3: IP address shown here is connected to the NAT network 
+enp0s8: static IP of the system
+lo: loopback address(This is used by the system to communicate with itself i.e it is a Local Network Interface)
+
+So the computer is connected to two networks i.e enp0s3 and enp0s8
+-----------------
+ip addr (alternate to ifconfig command)
+-----------------
+ping: used to check the network connectivity from local to the destination 
+eg: ping google.com
+
+ping command sends ICMP packets to google.com.
+If google.com receives the packets, it is going to reply back
+-----------------
+tracert:
+eg. tracert www.google.com
+This command will send 3 packets to the destination i.e www.google.com. It is going to show all the hops that is going to take to reach the google server. Is also shows the latencies at each hop
+-----------------
+netstat -antp
+This command will show all the tcp open ports. It aslo shows the corresponding process and processID that is listening on this port
+
+ps aux | grep <process-name>			#to get the process ID of that process
+-----------------
+dig: this command shows the dns lookup
+
+eg: dig google.com 
+This shows the final IP that the domain is resolution to. Also, the dns server(that is resolving) IP which contains the record.
+-------------------
+nslookup: older version of dig
+-------------------
+route -n:
+This command is going to show the gateways
+-------------------
+mtr:
+same as tracert but this is live
+eg: mtr www.google.com 
+-------------------
+telnet <host name/ip> <port>
+This command is going to show if a port is open on the host or not. WTest weather the local machine is able to connect to the target on the specified port
+
+
+
+
+
+
