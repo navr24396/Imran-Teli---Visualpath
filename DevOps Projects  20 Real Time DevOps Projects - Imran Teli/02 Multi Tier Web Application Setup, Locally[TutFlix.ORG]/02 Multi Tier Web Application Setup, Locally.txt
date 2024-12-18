@@ -1,0 +1,207 @@
+Clone the source code 
+cd 'E:\Videos\Udemy\Imran Teli - Visualpath\DevOps Projects  20 Real Time DevOps Projects - Imran Teli'
+https://github.com/devopshydclub/vprofile-project.git
+
+Switch to the branch 'local-setup'
+$ git checkout local-setup
+
+Open in vscode
+$ code .
+
+The below file creates Virtual machines using script in below file
+E:\Videos\Udemy\Imran Teli - Visualpath\DevOps Projects  20 Real Time DevOps Projects - Imran Teli\vprofile-project\vagrant\Manual_provisioning\Vagrantfile
+Nginx VM - Load Balancer
+tomcat vm - Application Server
+RabbitMQ vm - Message Broker
+Memcache vm - DB Cache
+DB vm - MYSQL server
+
+Go the directory where Vagrant file is presnet and run vagrant up to launch the VMs
+$ pwd && ls
+/e/Videos/Udemy/Imran Teli - Visualpath/DevOps Projects  20 Real Time DevOps Projects - Imran Teli/vprofile-project/vagrant/Manual_provisioning
+Vagrantfile  VprofileProjectSetupWindowsAndMacIntel.pdf
+
+
+$ vagrant up
+Bringing machine 'web01' up with 'virtualbox' provider...
+Bringing machine 'app01' up with 'virtualbox' provider...
+Bringing machine 'rmq01' up with 'virtualbox' provider...
+Bringing machine 'mc01' up with 'virtualbox' provider...
+Bringing machine 'db01' up with 'virtualbox' provider..
+
+Issues and fixes:
+Issue: Vagrant:* Unknown configuration section 'hostmanager'.
+Fix: 
+vagrant plugin install vagrant-hostmanager
+vagrant plugin list
+vagrant reload
+vagrant up
+
+---
+Now ssh into the vms and check the contents of /etc/hosts file and you should see below entries in all the servers
+$ vagrant ssh web01
+vagrant@web01:~$ cat /etc/hosts
+192.168.56.11   web01
+192.168.56.12   app01
+192.168.56.15   db01
+192.168.56.14   mc01
+192.168.56.16   rmq01
+------------------------------------------------
+009 c. DB, Cache & Queue Setup:
+
+Now follow the below pdf file for provisioning the servers
+/e/Videos/Udemy/Imran Teli - Visualpath/DevOps Projects  20 Real Time DevOps Projects - Imran Teli/vprofile-project/vagrant/Manual_provisioning/VprofileProjectSetupWindowsAndMacIntel.pdf
+
+1. Nginx => Web Service
+2. Tomcat => Application Server
+3. RabbitMQ => Broker/Queuing Agent
+4. Memcache => DB Caching
+5. ElasticSearch => Indexing/Search service
+6. MySQL => SQL Database
+
+Setup should be done in below mentioned order
+MySQL (Database SVC)
+Memcache (DB Caching SVC)
+RabbitMQ (Broker/Queue SVC)
+Tomcat (Application SVC)
+Nginx (Web SVC)
+----------------------------------------------
+1. MYSQL Setup:
+***Follow pdf for installation which has clear instructions
+Look for the [base] section and uncomment the lines starting with baseurl by removing the leading # from the baseurl line. Update all instances of http://mirrorlist.centos.org to http://vault.centos.org, and also update http://mirror.centos.org to http://vault.centos.org
+refer https://www.tecmint.com/fix-cannot-find-a-valid-baseurl-for-repo/
+
+sudo sed -i -e 's|http://mirrorlist.centos.org|http://vault.centos.org|g' -e 's|http://mirror.centos.org|http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo
+
+[root@db01 ~]# cat /etc/yum.repos.d/CentOS-Base.repo
+# CentOS-Base.repo
+#
+# The mirror system uses the connecting IP address of the client and the
+# update status of each mirror to pick mirrors that are updated to and
+# geographically close to the client.  You should use this for CentOS updates
+# unless you are manually picking other mirrors.
+#
+# If the mirrorlist= does not work for you, as a fall back you can try the
+# remarked out baseurl= line instead.
+#
+#
+
+[base]
+name=CentOS-$releasever - Base
+mirrorlist=http://vault.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
+baseurl=http://vault.centos.org/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#released updates
+[updates]
+name=CentOS-$releasever - Updates
+mirrorlist=http://vault.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+baseurl=http://vault.centos.org/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras
+mirrorlist=http://vault.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra
+baseurl=http://vault.centos.org/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+#additional packages that extend functionality of existing packages
+[centosplus]
+name=CentOS-$releasever - Plus
+mirrorlist=http://vault.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra
+baseurl=http://vault.centos.org/centos/$releasever/centosplus/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+---
+For saving the password permanently, make an entry in /etc/profile file
+[root@db01 vprofile-project]# vi /etc/profile
+
+DB_PASSWORD=admin123
+
+[root@db01 vprofile-project]# source /etc/profile
+[root@db01 vprofile-project]# echo $DB_PASSWORD
+admin123
+-------------------------------------------------------------------------------------------------------------------------
+2.MEMCACHE SETUP:
+Make the neccessary changes in /etc/yum.repos.d/CentOS-Base.repo file as we have done for other server. 
+For rest of the steps refer pdf file
+-------------------------------------------------------------------------------------------------------------------------
+3.RABBITMQ SETUP:
+Make the neccessary changes in /etc/yum.repos.d/CentOS-Base.repo file as we have done for other server. 
+Install dnf if you see command not found while installing any package using 
+sudo yum install -y dnf
+
+yum update -y
+yum install epel-release -y
+yum install socat -y
+yum install erlang -y
+yum install wget -y
+wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.5/rabbitmq-server-4.0.5-1.el8.noarch.rpm
+rpm --import https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.5/rabbitmq-server-4.0.5-1.el8.noarch.rpm.asc
+
+
+
+rpm --import https://github.com/rabbitmq/signing-keys/releases/download/v4.0.5/rabbitmq-release-signing-key.asc
+
+rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
+
+
+Working steps:
+yum update -y
+yum install epel-release -y
+
+sudo nano /etc/yum.repos.d/rabbitmq.repo
+[rabbitmq_rpm]
+name=RabbitMQ Repository
+baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
+gpgcheck=1
+gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+enabled=1
+
+sudo yum clean all
+sudo dnf makecache
+
+sudo dnf install -y rabbitmq-server
+
+sudo systemctl start rabbitmq-server
+sudo systemctl enable rabbitmq-server
+
+sudo systemctl status rabbitmq-server
+
+-------------------------------------------------------------------------------------------------------------------------
+4.TOMCAT SETUP:
+Follow pdf 
+
+CODE BUILD & DEPLOY (app01)
+Follow pdf 
+-------------------------------------------------------------------------------------------------------------------------
+5.NGINX SETUP:
+Follow pdf
+----------------------------
+Validate:
+Take the ip address of the nginx server and put in the browser and you will see the application.
+http://192.168.56.11/
+
+As a user from the browser, we accessed nginx service, nginx service then forwarded to tomcat server which then forwarded to Rabbit MQ and then to Memcached and MySQL server
+
+So finally the query that got executed on tomcat server was then cached to the Memcached server 
+------------
+To destroy the VMs, do vargrant destroy
+$ pwd
+/e/Videos/Udemy/Imran Teli - Visualpath/DevOps Projects  20 Real Time DevOps Projects - Imran Teli/vprofile-project/vagrant/Manual_provisioning
+
+$ vagrant destroy
+
+
+
+
+
+
+
+
+

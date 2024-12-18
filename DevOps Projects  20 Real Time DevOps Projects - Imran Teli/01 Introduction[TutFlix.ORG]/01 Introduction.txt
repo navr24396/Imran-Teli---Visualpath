@@ -1,0 +1,22 @@
+Project SourceCode: https://github.com/devopshydclub/vprofile-project.git
+
+Install the tools specified in branch 'prereqs'
+refer https://github.com/devopshydclub/vprofile-project/tree/prereqs
+
+choco install virtualbox --version=7.1.4 -y
+choco install vagrant --version=2.4.3 -y
+choco install git -y
+choco install corretto17jdk -y
+choco install maven -y
+choco install awscli -y
+choco install intellijidea-community -y
+choco install vscode -y
+choco install sublimetext3 -y
+---
+Now Sign Up into below
+GitHub
+Purchase a domain in GoDaddy
+DockerHub
+Sonarcloud 
+----
+Create an AWS account and then an IAM user for console access with admin privilages
