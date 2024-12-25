@@ -1,0 +1,193 @@
+023 a. Introduction:
+
+		COMPARISON
+
+Beanstalk		Tomcat EC2/VM
+ELB in Beanstalk	Nginx LB/ELB
+AutoScaling		None/Autoscaling
+EFS/S3			NFS/S3/EFS
+RDS			MYSQL on EC2/VM
+ELASTIC CACHE		MEMCACHED on EC2/VM
+ACTIVE MQ		RABBITMQ on EC2/VM
+ROUTE 53		GODADDY or LOCAL DNS
+CLOUDFRONT		NONE/ MULTI DC ACCROSS WORLD
+
+Steps:
+1. Login to AWS Account
+2. Create key pair for Beanstalk instance login
+3. Create SG for Elastic cache, RDS and Active MQ
+4. Create RDS, Amazon Elastic Cache, Amazon Active MQ
+5. Create Elastic Benstalk Environment
+6. Update SG of backend to allow traffic from Beanstalk SG
+7. Update SG of backend to allow internal traffic
+
+Flow of Execution:
+1. Launch EC2 instance for DB initializing
+2. Login to the instance and initialize RDS DB
+3. Change healthcheck on beanstalk to /login
+4. Add 443 htts listener to ALB
+5. Build artifact with backend information
+6. Deploy artifact to beanstalk
+7. Create CDN with SSL cert
+-------------------------------------------------------------------------
+024 b. SecurityGrp And KeyPairs:
+
+1) Create a key pair for instances launched by Elastic Beanstalk
+2) Create a Security Group for backend services and allow All traffic from its own SG for the services to communicate among themselves
+-------------------------------------------------------------------------
+025 c. RDS:
+
+1) Create a Subnet Group and choose all the regions and subnets in that VPC so that our DB instances can be launched in any of these subnets
+2) Create a parameter Group by selecting the Database Engine(mysql 5.6) that we want to launch
+3) Create a RDS now by passing below
+
+* MySQL Engine with its version
+* Database Instance Identifier i.e name of the Database Instance
+* Master Username and Password i.e username and passowrd for the master user to login
+* DB instance size i.e instance type; select t2.micro
+* Storage Type i.e General Purpose SSD or Provisioned IOPS
+* Enable Storage Autoscaling and give Maximum Storahe Threshold i.e maximum size to which storage can grow
+* Choose to enable multi AZ(creates a standby DB instance in another AZ) or choose to not create a standby instance to keep the cost under check
+* Give the VPC and the Subnet Group and Security Group and disable public access
+* Under Database Options, give initial database name as accounts and choose the parameter group that we created
+* Enable or disable Automatic Backups as per the need and give pass the backup retention period
+* Enable or disable auto minor version upgrades as per need
+
+Endpoint: vprofile.ctme4q202rx7.us-east-1.rds.amazonaws.com
+-------------------------------------------------------------------------
+026 d. AWS Elasticache:
+
+* Create Parameter Group by choosing the memcached family 
+* Create a Subnet Group by selecting the AZs and subnets(choose all AZs and subnets so that our memcached instance can be launched in any of the subnets)
+* Now create Memcached by selecting Engine Version(1.4.5), paramter group, node type and no. of nodes, subnet group, security group etc
+
+Copy Configuration Endpoint of Memcached
+
+Note: Engine selected in parameter group and the Engine selectig while creating Memcached should be same
+Endpoint: memcached-vprofile.dtklur.cfg.use1.cache.amazonaws.com:11211
+-------------------------------------------------------------------------
+027 e. Amazon MQ:
+
+* Select Deployment mode as Single-Instance Broker and Storage Type as Durability Optimized 
+* Select Broker instance type as t2.micro 
+* Pass the Username and Password 
+* Select Broker Engine and for the broker configuration choose create a new configuration with default values
+* Select the VPC, Security Group and public accessibility as No 
+
+Copy AMQP endpoint of Amazon MQ
+Endpoint: b-4c81563a-d8ee-4d8d-8db1-d7d094295358.mq.us-east-1.amazonaws.com:5671
+-------------------------------------------------------------------------
+028 f. DB Initialization:
+
+* Copy the endpoint of the RDS instance
+* Create a EC2 instance to initialize the Database, create a SG for it and allow SSH only from your ip
+* ssh into the server
+sudo apt update
+sudo apt install mysql-client -y
+
+* In the SG of the backend services allow port 3306 from the instances which we created for initializing DB
+Now conncet to mysql server
+mysql -h <RDS endpoint> -u <username> -p<password>
+show databeses;
+exit 
+
+Initialize the database 'accounts' with the schema that we have in our source code
+git clone <source code>
+git checkout aws-Refactor
+cd src/main/resources/
+we have db-backup.sql file 
+
+mysql -h <RDS endpoint> -u <username> -p<password> <database-name> < db-backup.sql
+Now login in into the databse and and see that the tables are created
+
+If above doesn't work, do below
+mysql -h <RDS endpoint> -u <username> -p<password>
+show databases;
+use <database-name>
+source /home/ubuntu/vprofile-project/src/main/resources/db_backup.sql;
+exit;
+
+mysql -h <RDS endpoint> -u <username> -p<password> 
+show databases;
+use <database>;
+show tables;
+exit;
+
+Now RDS is initialized
+We can now delete the EC2 instance and its Security Group as its work is done. Also revert changes made in SG of backend
+-------------------------------------------------------------------------
+029 g. AWS Elastic Beanstalk:
+
+* Click on Create Application and pass Application name 
+* Choose platform as Tomcat with version 8.5
+* Initially lets choose Samle Application under Application Code and click on Configure more options
+
+* Now lets edit, Instances section and choose the security group, change root volume type to Genaral Purpose SSD and Size as 8 GB
+* Edit Capacity and choose Auto Scaling Group environment type as Load Balanced and give min and max size of ASG, choose Instance type, AMI ID, Avaliability zone as Any, under Scaling   Triggers choose metric as Network Out and Save
+
+* Edit Load Balancer and choose Application Load Balancer ans Save (further setting like health check and Lister port we will update once ALB is created)
+* Edit Rolling updates and deployments and choose Deployment Policy as Rolling, Batch size and Save
+* Edit Security and choose Key pair and save
+* Edit Monitoring and choose Basic 
+* Edit Tags and pass required Tags
+* Now click on Create App
+
+Once the Beanstalk is up and running, click on the load balancer endpoint to see our sample application
+Now edit the backend security group to allow traffic from Beanstalk Security Group on the below ports
+MySQL port(3306), Memcached port(11211), Active MQ port(5671)
+
+
+Now, go the Project in Beanstalk > Configuration and do follwing
+* Edit Load Balancer and Add listner; choose port as 443 and select the certificate > Add. Also, change health check path to /login and Save > Enable Stickiness policy and Apply
+
+-------------------------------------------------------------------------
+030 h. Build & Deploy Artifact:
+
+Lets build the application locally by cloning the source code and checking out to aws-Refactor branch
+Lets make changes to the application.properties file before we build our application
+cd src/main/resources
+vi application.properties
+
+Update mysql endpoint and password
+Update Elastic Cache Endpoint
+Update RabbitMQ endpoint and password
+
+Go to the top level directory where pom.xml is present and run 'mvn install'
+You wll now see the artifact generated under target folder
+We have to upload this artifact to Beanstalk environment
+Go to Beanstalk > Application Version > Upload > pass application version and upload the war file
+
+Once it is uploaded, select the version and click on Actions and choose Environment and Deploy
+
+Now. lets go to Environment section and click on the environmet into which we have deployed and see the Recent events and wait for the deployment to be completed and status to be healthy
+Now take the beanstalk endpoint and make an CNAME dns entry in our GoDaddy DNS records by giving some host(eg. vprofile)
+
+Now the application is accessible over vprofile.ashok.today
+-------------------------------------------------------------------------
+031 i. Amazon Cloudfront:
+
+* Go to Cloudfront and create Distribution and choose Web Distribution and Get Started
+* Give Origin Domain name as vprofile.ashok.today
+
+Under Default Cache Behaviour Settings
+Viewer Protocol Policy: HTTP and HTTPS
+Allowed HTTP methods: GET,HEAD,OPTIONS,PUT,POST,PATCH,DELETE
+Origin Protocol Policy: Match Viewer
+Choose the SSL certificate
+Security Policy: TLSv1
+-------------------------------------------------------------------------
+032 j. Validate And Summarize:
+
+Now to check whether our requests are served from Cloudfront or Load Balncer, 
+browse vprofile.ashok.today and hit F12 and refresh the page
+Expand GET call and see via
+
+Now lets delete everything:
+Go to Cloudfront and disable it, by the time it is disabled...
+Got to RDS and delete and uncheck Confirm Final Snapshot
+Go to Elastic Cache and delete
+Go to Rabbit MQ and delete
+Go to Beanstalk Environment and Terminate Environment
+Finally delete the Cloudfront
+
+

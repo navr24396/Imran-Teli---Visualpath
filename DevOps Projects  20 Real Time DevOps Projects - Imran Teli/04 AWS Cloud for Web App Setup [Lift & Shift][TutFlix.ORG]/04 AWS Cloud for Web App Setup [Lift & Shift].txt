@@ -1,0 +1,233 @@
+1) Create a Security Group for our Load Balancer(i.e Nginx)
+Allow http and https from anywhere
+
+2) Creata a Security Group for tomcat instances
+Open port 8080(since tomcat is running on it) and allow it only from Security of Nginx Load Balancer
+Allow port 22 to ssh into the server
+
+3) Create a Security Group for backend services i.e Rabbit MQ, Memcached and MySQL services
+Allow port 3306(MySQL port) from Security Group of our application i.e tomcat Security Group
+Allow port 11211(Memcached port) from Security Group of our application i.e tomcat Security Group
+Allow port 5672(RabbitMQ port) from Security Group of our application i.e tomcat Security Group
+Allow All traffic from its own Security Group for the backend services to communicate with each other
+Allow port 22 to ssh into the servers
+
+4) Create a key pair
+
+5) Clone the source code and swith to branch 'aws-LiftAndShift'
+git clone https://github.com/devopshydclub/vprofile-project.git
+git checkout aws-LiftAndShift
+
+6) Provision(Amazon Linux 2023) MySQL EC2 instance with the user-data present at E:\Videos\cloned repos for projects\vprofile-project\userdata\backend.sh
+
+#!/bin/bash
+
+DATABASE_PASS='admin123'
+
+# Update the system
+sudo dnf update -y
+
+# Install required packages
+sudo dnf install git zip unzip mariadb105-server firewalld -y
+
+# Start & enable MariaDB server
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+# Clone the repository
+cd /tmp/
+git clone -b main https://github.com/hkhcoder/vprofile-project.git
+
+# Configure MariaDB
+sudo mysqladmin -u root password "$DATABASE_PASS"
+sudo mysql -u root -p"$DATABASE_PASS" -e "UPDATE mysql.user SET authentication_string=PASSWORD('$DATABASE_PASS') WHERE User='root'"
+sudo mysql -u root -p"$DATABASE_PASS" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
+sudo mysql -u root -p"$DATABASE_PASS" -e "DELETE FROM mysql.user WHERE User=''"
+sudo mysql -u root -p"$DATABASE_PASS" -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
+sudo mysql -u root -p"$DATABASE_PASS" -e "FLUSH PRIVILEGES"
+sudo mysql -u root -p"$DATABASE_PASS" -e "CREATE DATABASE accounts"
+sudo mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON accounts.* TO 'admin'@'localhost' IDENTIFIED BY 'admin123'"
+sudo mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON accounts.* TO 'admin'@'%' IDENTIFIED BY 'admin123'"
+sudo mysql -u root -p"$DATABASE_PASS" accounts < /tmp/vprofile-project/src/main/resources/db_backup.sql
+sudo mysql -u root -p"$DATABASE_PASS" -e "FLUSH PRIVILEGES"
+
+# Restart MariaDB server
+sudo systemctl restart mariadb
+
+# Configure and start the firewall
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+sudo firewall-cmd --get-active-zones
+sudo firewall-cmd --zone=public --add-port=3306/tcp --permanent
+sudo firewall-cmd --reload
+sudo systemctl restart mariadb
+---
+ssh into the mysql server
+
+#To check the user data, do curl http://169.254.169.254/latest/user-data
+systemctl status mariadb
+ps -ef 				#find mariadb process
+#Login to mysql db
+mysql -u root -p
+show databes;
+use accounts;
+show tables;
+
+7) Provision(Amazon Linux 2023) Memcached with user-data present at E:\Videos\cloned repos for projects\vprofile-project\userdata\memcache.sh
+---
+#!/bin/bash
+
+# Install required packages
+sudo dnf install -y memcached firewalld
+
+# Start and enable memcached service
+sudo systemctl start memcached
+sudo systemctl enable memcached
+sudo systemctl status memcached
+
+# Update memcached configuration to listen on all interfaces
+sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/sysconfig/memcached
+
+# Restart memcached service to apply changes
+sudo systemctl restart memcached
+
+# Configure firewall to allow memcached ports
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+sudo firewall-cmd --add-port=11211/tcp --permanent
+sudo firewall-cmd --add-port=11111/udp --permanent
+sudo firewall-cmd --reload
+
+# Start memcached with specific options
+sudo memcached -p 11211 -U 11111 -u memcached -d
+
+---
+systemctl status memcached
+ss -tulnp | grep 11211			#to check if it is running on right port
+
+8) Provision RabbitMQ(Ubuntu) with user-data present at E:\Videos\cloned repos for projects\vprofile-project\userdata\rabbitmq.sh
+---
+#!/bin/bash
+
+# Update package lists
+sudo apt update -y
+
+# Install necessary packages
+sudo apt install -y wget apt-transport-https
+
+# Add RabbitMQ repository
+wget -O- https://dl.bintray.com/rabbitmq/debian/gh/gpg | sudo tee /etc/apt/trusted.gpg.d/rabbitmq.asc
+echo "deb https://dl.bintray.com/rabbitmq/debian/gh/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+
+# Install RabbitMQ
+sudo apt update -y
+sudo apt install -y rabbitmq-server
+
+# Enable and start RabbitMQ service
+sudo systemctl enable --now rabbitmq-server
+
+# Open RabbitMQ port in firewall (if applicable)
+sudo ufw allow 5672/tcp
+
+# Check RabbitMQ service status
+sudo systemctl status rabbitmq-server
+
+# Configure RabbitMQ (to allow all users)
+sudo sh -c 'echo "[{rabbit, [{loopback_users, []}]}]." > /etc/rabbitmq/rabbitmq.config'
+
+# Create a new user with administrator rights
+sudo rabbitmqctl add_user test test
+sudo rabbitmqctl set_user_tags test administrator
+
+# Restart RabbitMQ service
+sudo systemctl restart rabbitmq-server
+
+---
+systemctl status rabbitmq-server
+
+9) Update Private IP address of backend servers in Route 53 private DNS Zones
+
+Go to Route 53 and create a Private Hosted Zone, pass any domain name as (vprofile.in)
+Create Simple routing records like below 
+
+Record name			Type	Routing policy		Value/Route traffic to
+------------			----	-------------		----------------------
+mysql.vprofile.in		A	Simple			Pvt IP address of mysql server
+memcached.vprofile.in		A	Simple			Pvt IP address of memached server
+rabbitmq.vprofile.in		A	Simple			Pvt IP address of rabbitmq server
+
+10) Provision(Ubuntu) tomcat instances with user-data present at E:\Videos\cloned repos for projects\vprofile-project\userdata\tomcat_ubuntu.sh
+refer https://www.redswitches.com/blog/install-apache-tomcat-on-ubuntu/
+
+--------------------------------------------------------
+019 d. Build And Deploy Artifacts:
+
+1) Install openjdk-8 and maven on your local machine
+Open application.properties file present at E:\Videos\cloned repos for projects\vprofile-project\src\main\resources\application.properties
+
+Change the configuration like jdbc url and host as per Route53 DNS zones entries, see below
+jdbc.url=jdbc:mysql://mysql.vprofile.in:3306/accounts?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+memcached.active.host=memcached.vprofile.in
+rabbitmq.address=rabbitmq.vprofile.in
+
+Go to top level directory in our repository where we have pom.xml file and issue mvn install command
+Go to target directory and you see the war file created
+Push this artifact to the S3 bucket 
+
+aws s3 mb s3://artifact-bucket-vprofile
+aws s3 ls
+aws s3 cp vprofile-v2.war s3://artifact-bucket-vprofile
+
+2) Create an IAM role for the EC2 instances to access S3 bucket and add it to the tomcat instance
+
+3) ssh into tomcat server
+sudo -i
+Install awscli using https://www.xda-developers.com/how-install-aws-cli-ubuntu/
+systemctl status tomcat
+cd /var/lib/tomcat8/webapps
+systemctl stop tomcat
+rm -rf ROOT
+
+#Now downlaod the artifcat here
+aws s3 cp s3://artifact-bucket-vprofile/vprofile-v2.war /opt/tomcat/webapps/ROOT.war
+systemctl start tomcat
+
+#Toc check network connectivity from tomcat to backend servers, do telnet
+telnet <backend> <port>
+--------------------------------------------------------------------------
+020 e. Load Balancer & DNS:
+
+1) Create a Target Group with port 8080 as tomcat runs on that port, health check path is /login, select application server i.e tomcat server and create.
+
+2) Create a Application Load Balancer which accepts https traffic and choose the ACM certificate
+
+3) Copy the DNS name of the Load Balancer and go to Domain provider i.e GoDaddy and create a CNAME record with key as vprofile(anything) and value as DNS name of ALB
+Now our application is accessible at https://vprofile.ashok.today
+
+--------------------------------------------------------------------------
+021 f. Autoscaling Group:
+
+Create an AutoScaling Group for our application server i.e tomcat instances
+
+1) Create an Image from the tomcat server 
+2) Create a launch template 
+3) Create an AutoScaling Group
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
