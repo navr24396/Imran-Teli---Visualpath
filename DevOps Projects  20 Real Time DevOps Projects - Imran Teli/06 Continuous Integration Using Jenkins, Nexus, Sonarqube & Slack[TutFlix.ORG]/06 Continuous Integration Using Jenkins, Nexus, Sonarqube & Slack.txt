@@ -1,0 +1,452 @@
+034 b. Security Group & Keypairs:
+
+1) Create a key-pair
+2) Create a Security Group for Jenkins Server with port 8080(as jenkins runs on this port) and port 22 from your ip
+3) Create a Security Groups for Nexs Server with port 8081(as Nexs runs on this port) open from your IP and SG of jenkins(as jenkins need to upload artifact to nexs server) and port 22 from    your IP
+4) Create a Security Groups for SonarQube Server. Sonarqube by default runs on port 9000, but we are also going to run nginx on same sonarqube server so that nginx forwards requests to Sonarqube server
+
+Allow port 80 from your IP so that you can see Sonarqube dashboards
+Allow port 80 from jenkins SG, so that Jenkins can upload reports to Sonarqube server
+
+Also, Sonarqube will try to connect to Jenkins to return the Quality Gate results. So allow all traffic (or) port 8080 from Sonarqube SG in Jenkins SG
+
+--------------------------------------------------------------------------------------
+035 c. Ec2 User Data Scripts:
+
+Clone the repository
+https://github.com/devopshydclub/vprofile-project.git
+git checkout ci-jenkins
+
+1) Launch Jenkins instance(t2.small) on Ubuntu with userdata present at E:\Videos\cloned repos for projects\vprofile-project\userdata\jenkins-setup.sh
+---
+#!/bin/bash
+sudo apt update
+sudo apt install openjdk-11-jdk -y
+sudo apt install maven -y
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+  
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install jenkins -y
+sudo systemctl start jenkins.service
+sudo systemctl status jenkins
+sudo ufw allow 8080
+sudo ufw allow OpenSSH
+sudo ufw enable
+---
+2) Launch Nexs server on Amazon Linux 2(t2.medium) with userdata presnt at E:\Videos\cloned repos for projects\vprofile-project\userdata\nexus-setup.sh
+follow https://devopscube.com/how-to-install-latest-sonatype-nexus-3-on-linux/ for installation
+---
+sudo yum update -y
+sudo yum install wget -y
+sudo yum install java-17-amazon-corretto.x86_64 -y
+sudo mkdir /app && cd /app
+sudo wget -O nexus.tar.gz https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+sudo tar -xvf nexus.tar.gz
+sudo mv nexus-3* nexus
+sudo adduser nexus
+sudo chown -R nexus:nexus /app/nexus
+sudo chown -R nexus:nexus /app/sonatype-work
+sudo vi  /app/nexus/bin/nexus.rc
+ run_as_user="nexus"
+sudo vi /etc/systemd/system/nexus.service
+[Unit]
+Description=nexus service
+After=network.target
+
+[Service]
+Type=forking
+LimitNOFILE=65536
+User=nexus
+Group=nexus
+ExecStart=/app/nexus/bin/nexus start
+ExecStop=/app/nexus/bin/nexus stop
+User=nexus
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+---
+sudo chkconfig nexus on
+sudo systemctl start nexus
+
+
+3) Launch Sonarqube server(t2.medium) on Ubuntu with userdata present at E:\Videos\cloned repos for projects\vprofile-project\userdata\sonar-setup.sh
+
+---
+#!/bin/bash
+cp /etc/sysctl.conf /root/sysctl.conf_backup
+cat <<EOT> /etc/sysctl.conf
+vm.max_map_count=262144
+fs.file-max=65536
+ulimit -n 65536
+ulimit -u 4096
+EOT
+cp /etc/security/limits.conf /root/sec_limit.conf_backup
+cat <<EOT> /etc/security/limits.conf
+sonarqube   -   nofile   65536
+sonarqube   -   nproc    409
+EOT
+
+sudo apt-get update -y
+sudo apt-get install openjdk-11-jdk -y
+sudo update-alternatives --config java
+
+java -version
+
+sudo apt update
+wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+sudo apt install postgresql postgresql-contrib -y
+#sudo -u postgres psql -c "SELECT version();"
+sudo systemctl enable postgresql.service
+sudo systemctl start  postgresql.service
+sudo echo "postgres:admin123" | chpasswd
+runuser -l postgres -c "createuser sonar"
+sudo -i -u postgres psql -c "ALTER USER sonar WITH ENCRYPTED PASSWORD 'admin123';"
+sudo -i -u postgres psql -c "CREATE DATABASE sonarqube OWNER sonar;"
+sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube to sonar;"
+systemctl restart  postgresql
+#systemctl status -l   postgresql
+netstat -tulpena | grep postgres
+sudo mkdir -p /sonarqube/
+cd /sonarqube/
+sudo curl -O https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.3.0.34182.zip
+sudo apt-get install zip -y
+sudo unzip -o sonarqube-8.3.0.34182.zip -d /opt/
+sudo mv /opt/sonarqube-8.3.0.34182/ /opt/sonarqube
+sudo groupadd sonar
+sudo useradd -c "SonarQube - User" -d /opt/sonarqube/ -g sonar sonar
+sudo chown sonar:sonar /opt/sonarqube/ -R
+cp /opt/sonarqube/conf/sonar.properties /root/sonar.properties_backup
+cat <<EOT> /opt/sonarqube/conf/sonar.properties
+sonar.jdbc.username=sonar
+sonar.jdbc.password=admin123
+sonar.jdbc.url=jdbc:postgresql://localhost/sonarqube
+sonar.web.host=0.0.0.0
+sonar.web.port=9000
+sonar.web.javaAdditionalOpts=-server
+sonar.search.javaOpts=-Xmx512m -Xms512m -XX:+HeapDumpOnOutOfMemoryError
+sonar.log.level=INFO
+sonar.path.logs=logs
+EOT
+
+cat <<EOT> /etc/systemd/system/sonarqube.service
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+User=sonar
+Group=sonar
+Restart=always
+
+LimitNOFILE=65536
+LimitNPROC=4096
+
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+systemctl daemon-reload
+systemctl enable sonarqube.service
+#systemctl start sonarqube.service
+#systemctl status -l sonarqube.service
+apt-get install nginx -y
+rm -rf /etc/nginx/sites-enabled/default
+rm -rf /etc/nginx/sites-available/default
+cat <<EOT> /etc/nginx/sites-available/sonarqube
+server{
+    listen      80;
+    server_name sonarqube.groophy.in;
+
+    access_log  /var/log/nginx/sonar.access.log;
+    error_log   /var/log/nginx/sonar.error.log;
+
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+
+    location / {
+        proxy_pass  http://127.0.0.1:9000;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+              
+        proxy_set_header    Host            \$host;
+        proxy_set_header    X-Real-IP       \$remote_addr;
+        proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto http;
+    }
+}
+EOT
+ln -s /etc/nginx/sites-available/sonarqube /etc/nginx/sites-enabled/sonarqube
+systemctl enable nginx.service
+#systemctl restart nginx.service
+sudo ufw allow 80,9000,9001/tcp
+
+echo "System reboot in 30 sec"
+sleep 30
+reboot
+
+---
+
+--------------------------------------------------------------------------------------
+036 d. Setup Jenkins, Nexus & SonarQube Server:
+
+1) Acces jenkins server at http://<public-ip>:8080
+2) For the password ssh into jenkins severs and find the administrator password present at the given path
+3) Install Suggested Plugins
+4) Create a username with user and password as admin
+
+#Before we create a Jenkins job, we will setup Nexs Repository because our build job is going to install dependencies from Nexs repository
+
+5) Access Nexs Server at http://<public-ip>:8081
+6) Sign in with username admin and for the password ssh into nexs server and find the administrator password present at /app/sonatype-work/nexus3/admin.password
+7) Chnage password as admin123 and enable anonymous access
+8) Go to Repositories section and lets create 3 repositories
+9) i.   Lets create a maven2 hosted repository where we upload our artifacts. The artifacts that are going to be stored here are well tested, so that they can be deployed to other servers
+        Create repository > select maven2 (hosted) > Pass a Name(eg. vprofile-release) > Create repository.
+   ii.  Lets create a maven2 proxy repository. It is going to store maven dependencies. So maven tool is going to download dependencies from here
+        Create repository > select maven2 (proxy) > Pass a Name(eg. vprofile-maven-central) > Under Remote Store pass maven remote central repository url(https://repo1.maven.org/maven2/),         from where this repository will download the dependencies and kept > Create Repository.
+   iii. Lets create a snapshot repositoy which is same as release respository except the fact that the policy changes from Release to Snapshot
+        Create repository > select maven2 (hosted) > Pass a Name(eg. vprofile-snapshot) > Change version policy to Snapshot > Create repository
+   iv. Lets create a maven2 (group) repository where we will group all the above 3 repositories.
+	Create repository > select maven2 (group) > Pass a Name(eg. vprofile-maven-group) > add the above created repositories as mebers to this group.
+
+Q: Now, repositories are created, but how does maven know that it has to download dependencies from here?
+A: In our source code we have settings.xml file(E:\Videos\cloned repos for projects\vprofile-project\settings.xml), where we define all these under servers section
+
+Note: If you have disabled anonymous access as done in step 7, you have to pass credentials i.e username and password.
+--------------------------------------------------------------------------------------
+
+037 e. Build & Nexus Integration Job:
+
+1) Lets now create a Freestyle jenkins job. Pass below
+   Repository URL: https://github.com/devopshydclub/vprofile-project.git
+   Branch Specifier: */ci-jenkins
+   Build > Invoke Top level maven targets: 
+   	Goal: install -DskipTests
+	Settings File Path: settings.xml 
+	Properties:
+	SNAP-REPO=vprofile-snapshot
+	NEXUS-USER=admin
+	NEXUS-PASS=admin123
+	RELEASE-REPO=vprofile-release
+	CENTRAL-REPO=vprofile-maven-central
+	NEXUS-GRP-REPO=vprofile-maven-group
+	NEXUSIP=<pvt-ip-of-nexus-server>
+	NEXUSPORT=8081
+
+2) Save and Build Now.
+
+--------------------------------------------------------------------------------------
+
+038 f. Slack Integration:
+
+1) Create a slack account if you don't have one.
+2) Create a workspace(eg. temp) and a channel(eg. vprofile-jenkins) in slack
+3) Now we will create a bot. Go to https://api.slack.com/apps and click on Create an App > From Scratch > pass App Name(eg. Jenkins) & Pick a workspace to develop your app in: temp > Create    App
+4) Click on OAuth & Permissions > Bot Token Scopes > click on Add an OAuth scope and choose chat:write
+5) Go to OAuth Tokens and click on Install to temp > Allow
+6) Now copy the Bot User OAuth Token and save it somewhere
+7) Now go to your slack channel and in the message section type @Jenkins and sent message and choose Invite to channel. This is done.
+
+#Now lets integrate slack bot with jenkins
+
+8) Manage Jenkins > Manage Plugins > Install Slack Notification 
+
+#Now lets save the slack token in jenkins credentials
+9) Manage Jenkins > Manage Credentials > Jenkins > Global Credentials > Add Credentials > Kind: Secret Text, Secret: <paste the token generated in slack>, ID: slack-token, Description:    slack-token
+
+10) Manage Jenkins > Configure System > Under Slack, select Slack Notifications, Credentials: slack-token, workspace: test, channel: vprofile-jenkins > Test Connection(should be     success), check Custom Slack app bot user > Save
+11) Now go to your job > Cofigure > Post Build Actions: Slack Notification: choose when you want to receive notification
+12) Configure > Post Build Actions: Archive the Artifact, File to Archive: **/*.war > Save > Build Now
+
+
+#Now we will get a notification in slack and thus we have successfully integrated jenkins with slack
+--------------------------------------------------------------------------------------
+
+039 g. Test, Code Analysis, SonarQube Integration:
+
+
+1) Lets create a job for running our unit test cases
+New Item > Name: test, Copy all the configuration from Buid job
+
+Goal: test
+Remove Files to Archieve from Post Build Actions and Save > Build Now
+
+2) Lets start integrating both these jobs
+
+Add test job as a downstream to build job
+Go to Build Job > Configure > Add post build action: Build other projects, Projects to Build: Test 
+
+3) Lets create a new job for running integration tests:
+New Item > Name: Integration Test, Copy all the configuration from test job
+Goals: verify -DSkipUnitTests > Save
+
+4) Lets integrate Integration test job with test job
+
+Add Integration test as a downstream to test job
+Go to test Job > Configure > Add post build action: Build other projects, Projects to Build: Integration test
+
+5) Lets build the Integration test job
+
+Go to Integraton test job > Build Now
+
+6) Now lets do Code Analysis
+First we will do simple code anyalysis and for that we need Checkstyle
+Manage Jenkins > Plugins > Available > select Checkstyle and Violations(which can check our Quality Gates) > Install without restart
+
+#Checkstyle will generate the report and and if there is any failure and if we cannot toleate more than 'n' no. of warnings, then Violation plugin will make the job unstable
+
+Create a New Job with name 'Code Analysis' and copy all the configuration from Buid job
+
+Golas: checksytle:checkstyle and remove other settings like archiving the job and downstream jobs 
+Post Build Actions: Publish checkstyle analysis results > Save > Build Now
+
+You will now see a checkstyle-result.xml file generated under target directory
+
+7) Lets setup violation:
+Go to Project Code Analysis > Configure > Post Build Action: Report Violation, paste loaction of xml file i.e target/checkstyle-result.xml and 100 as maximum toleration
+
+Note: Unstable job doesn't mean failure, it usually doesn't trigger downstream jobs if a job is marked as unstable
+
+8) Lets now integrate Integraton test job and Code Analysis job i.e add Code Analysis as a downstream to Integraton test job
+
+Go to Integraton test job > Configure > Add post build action: Build other projects, Projects to Build: Code Analysis
+
+#Now, we have all four jobs integrated. Next we have to integrate Sonarqube scanner which is another Code Analysis tool. Finally we need to publish all the results from Sonarqube scanner and Checkstyle to Sonarqube server
+
+9) Integrate Sonarqube server:
+Login to Sonarqube server using http://<public-ip of sonarqube server>:80, with username and password as admin
+
+First we will setup integration with Sonar and Jenkins
+
+Jenkins will need to do authetication to Sonar and for that we need a token
+Go to My Account > Security > Generate Token.
+
+Now go to Jenkins > Manage Jenkins > Manage Plugin > Install SonarQube Scanner and Sonar Quality Gates
+
+***SonarQube Scanner will do the Code Analysis and upload results to Sonarqube server, Sonar Quality Gates will check if the quality gates are passing or not
+
+Lets install Sonarqube scanner
+Manage Jenkins > Global Tool Configuration > Add SonarQube Scanner > Give Name(SonarQube Scanner) and select version > Save
+
+Manage Jenkins > Configure System > SonarQube Servers > check Environment variable > Add SonarQube: pass Name(eg. sonar-vprofile), Server URL: http://<pvt-ip of sonarqube server>, Server authentication token: Add > Secret text > give the toke that we create in Sonarqube server, pass ID(eg. sonartoken) > Save
+
+This settings is used to push the Sonarqube scanner results to Sonarqube server
+
+10) Now lets setup Qulaity Gates:
+Manage Jenkins > Configure System > Qulaity Gates - Sonarqube > Add Sonar Instance > pass Name(eg.sonar-vprofile), SonarQube Server URL: http://<pvt-ip of sonarqube server>, SonarQube access token: paste the token > Save
+
+11) Create a SonarScanner-Code Analysis job > Copy all the configuration from Buid job
+
+Configure > Golas: install, Golas: checkstyle:checkstyle, remove archive artifact and downstream project > Add Build Step: Execute SonarQube Scanner, Analysis properties: paste contents of E:\Videos\cloned repos for projects\vprofile-project\userdata\sonar-analysis-properties > Save > Build Now
+
+Go to Sonarqube server UI > Projects > see the results
+
+***Remember now we have tested without Quality Gates. Now lets create a Qulaity Gate
+
+12) Create Quality Gate:
+
+Sonarqube server UI > Quality Gates > Create > Name: eg. vpofile-QualityGates > Add condition: select On Overall Code, Qulaity Gate fails when: Bugs is greather than 50.
+
+Now go to our Sonarqube project > Project Settings > Quality Gate: choose the one which we created before vprofile-QualityGates
+
+13) Lets now make changes in Jenkisn job also
+
+Go to SonarScanner-Code Analysis job > Configure > Add Post Build Action: Qulaity Gates SonarQube plugin > Project key: vprofile(get from sonar-analysis-properties file), Job status when analysis fails: FAILED(or Unstable) > Save > Build Now
+
+14) Finally lets integrate this job with previous job 
+
+Go to Code Analysis Job > Configure > Add post build action: Build other projects, Projects to Build: SonarScanner-Code Analysis
+
+--------------------------------------------------------------------------------------
+
+040 h. Nexus Repository Integration:
+
+Now we will upload our artifact to Nexs server, for which we will create a job
+
+We will version and uplaod the artifact to Nexs respository for which we need to install some plugins
+
+Manage Jenkins > Manage Plugins > Install Nexs Artifact Uploader, Copy Artifact, Zentimestamp
+
+Create a job with name Deploy-to-Nexus > Add Build Step: 
+
+
+1) Copy artifact from another project:
+Project name: Build 		#give job name, in this case Build
+Artifact to copy: **/*.war 
+
+2) Nexus Artifact Uploader:
+Nexus Version: NEXUS3
+Nexus URL: <pvt-ip-of-nexus>:8081
+Credentials: Add Username(admin) and password(admin123) of nexus, pass ID(nexus-server-login)
+Group ID: QA
+Version: V$BUILD_ID
+Repository: vprofile-release		#nexus repository
+Artifacts: Artifact ID = vprofile-$BUILD_TIMESTAMP, Type: war, File: target/vprofile-v2.war, also check on change date pattern for BUILD_TIMESTAMP, Date and Time Pattern: yy-MM-dd_HHmm > Save
+
+Post Build Action: Slack Notification and check whatever is needed, Workspace: temp, Credentials: slack-token, Channel/member id: #<channel-name>
+
+Now click on Build Now and see that the war file is present in the configured repository
+
+Finally add this job as a downstream to previous job
+
+Go to SonarScanner-Code Analysis job > Configure > Add post build action: Build other projects, Projects to Build: Deploy-to-Nexus
+--------------------------------------------------------------------------------------
+041 i. Validate Pipeline & Summarize:
+
+Install a plugin named Build Pipeline
+Create a Build Pipleine View and name it as Vprofile Continuous Integration
+Under Pipleine Flow: Upstream/Downstream: Select Initia Job, No of Displayed Builds: 5 > Save
+
+Now click on Run and you will see the entire pipeline.
+
+To setup automatic Build Trigger for our first job, click on first job i.e Build > Build Triggers, select Poll SCM, schedule: * * * * * > Save
+
+You can either stop or terminate the instances once you are done with the project
+--------------------------------------------------------------------------------------
+
+042 j. CICD stack data backup:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
